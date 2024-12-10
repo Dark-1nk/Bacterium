@@ -1,93 +1,89 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyUnit : MonoBehaviour
 {
-    public float attackRange = 1f; // Range to detect player units
-    public LayerMask playerLayer; // Layer for player units
-    public float attackCooldown = 1f; // Time between attacks
-    public float moveSpeed = -2f; // Movement speed (negative for moving left)
-    BountyDamage bountyDamage;
+    public float speed = 2.0f;
+    public int health = 100;
+    public int attackDamage = 10;
+    public float attackRange = 1.0f;
+    public float attackCooldown = 1.0f;
+    public Slider healthSlider;
+    public Animator animator;
 
-    private Animator animator;
-    private float attackTimer;
-    private Rigidbody2D rb;
+    private Transform target;
+    private float nextAttackTime = 0f;
 
-    private bool isAttacking = false;
-
-    void Start()
+    private void Start()
     {
-        animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>();
-        attackTimer = 0f; // Initialize the attack timer
-        bountyDamage = GetComponent<BountyDamage>();
+        healthSlider.maxValue = health;
+        healthSlider.value = health;
     }
 
-    void Update()
+    private void Update()
     {
-        animator.SetFloat("magnitude", rb.velocity.magnitude);
+        healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
 
-        attackTimer -= Time.deltaTime;
-
-        if (!isAttacking)
+        if (target == null)
         {
-            MoveForward(); // Continue moving if not attacking
+            transform.position += Vector3.left * speed * Time.deltaTime;
         }
-
-        CheckAndAttackPlayerUnits();
-    }
-
-    void MoveForward()
-    {
-        // Move the unit forward (leftward)
-        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
-    }
-
-    void StopMoving()
-    {
-        // Stop the unit's movement
-        rb.velocity = Vector2.zero;
-    }
-
-    void CheckAndAttackPlayerUnits()
-    {
-        // Detect player units within attack range
-        Collider2D[] players = Physics2D.OverlapCircleAll(transform.position, attackRange, playerLayer);
-
-        if (players.Length > 0)
+        else if (Time.time >= nextAttackTime)
         {
-            StopMoving(); // Stop moving when a player unit is in range
-            isAttacking = true;
+            Attack();
+        }
+    }
 
-            if (attackTimer <= 0)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("PlayerUnit"))
+        {
+            target = other.transform;
+        }
+        else if (other.CompareTag("PlayerTower"))
+        {
+            target = other.transform;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("PlayerUnit") && target == other.transform)
+        {
+            target = null;
+        }
+    }
+
+    private void Attack()
+    {
+        if (target != null)
+        {
+            PlayerUnit player = target.GetComponent<PlayerUnit>();
+            if (player != null)
             {
-                // Trigger attack animation
-                if (animator != null)
-                {
-                    animator.SetTrigger("Attack");
-                }
-
-                // Apply damage to the first player unit in range
-                UnitHealth targetPlayer = players[0].GetComponent<UnitHealth>();
-                if (targetPlayer != null)
-                {
-                    bountyDamage.DealDamage(players[0].gameObject);
-                }
-
-                // Reset the attack cooldown
-                attackTimer = attackCooldown;
+                player.TakeDamage(attackDamage);
+                nextAttackTime = Time.time + attackCooldown;
             }
         }
         else
         {
-            // No player units in range, continue moving
-            isAttacking = false;
+
         }
     }
 
-    void OnDrawGizmosSelected()
+    public void TakeDamage(int damage)
     {
-        // Visualize the attack range in the editor
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        health -= damage;
+        healthSlider.value = health;
+
+        if (health <= 0)
+        {
+            if (healthSlider != null)
+            {
+                Destroy(healthSlider.gameObject);
+            }
+
+            Destroy(gameObject);
+        }
     }
 }

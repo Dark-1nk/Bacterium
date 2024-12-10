@@ -1,0 +1,142 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5e6fedc2472449cead18ef23b5cb30d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Library:
+  - m_Name: Walking/Idle
+    m_Hash: 681445819
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Neutrophil
+      m_Hash: 164789133
+      m_Sprite: {fileID: 309553266, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 309553266, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+    - m_Name: Natural Killer
+      m_Hash: 916048611
+      m_Sprite: {fileID: 1019231526, guid: 075013efa01056743a59723296f6da67, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1019231526, guid: 075013efa01056743a59723296f6da67, type: 3}
+    - m_Name: Monocyte
+      m_Hash: 132159736
+      m_Sprite: {fileID: -1265878724, guid: b060ca9346c580245b242dd6ea7f8796, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1265878724, guid: b060ca9346c580245b242dd6ea7f8796, type: 3}
+    - m_Name: Eosinophil
+      m_Hash: 275659917
+      m_Sprite: {fileID: -2044039473, guid: a4811106588c41b4a9d937def3c89bb5, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -2044039473, guid: a4811106588c41b4a9d937def3c89bb5, type: 3}
+    - m_Name: Killer T
+      m_Hash: 234903497
+      m_Sprite: {fileID: -1719474834, guid: 3d1e82912076905448ddbf4bfbece365, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1719474834, guid: 3d1e82912076905448ddbf4bfbece365, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 5
+  - m_Name: Damaged
+    m_Hash: 326473335
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Neutrophil
+      m_Hash: 164789133
+      m_Sprite: {fileID: -765690462, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -765690462, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+    - m_Name: Killer T
+      m_Hash: 234903497
+      m_Sprite: {fileID: 1902385896, guid: 3d1e82912076905448ddbf4bfbece365, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1902385896, guid: 3d1e82912076905448ddbf4bfbece365, type: 3}
+    - m_Name: Monocyte
+      m_Hash: 132159736
+      m_Sprite: {fileID: -1488087023, guid: b060ca9346c580245b242dd6ea7f8796, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1488087023, guid: b060ca9346c580245b242dd6ea7f8796, type: 3}
+    - m_Name: Eosinophil
+      m_Hash: 275659917
+      m_Sprite: {fileID: 79825530, guid: a4811106588c41b4a9d937def3c89bb5, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 79825530, guid: a4811106588c41b4a9d937def3c89bb5, type: 3}
+    - m_Name: Natural Killer
+      m_Hash: 916048611
+      m_Sprite: {fileID: -1248437088, guid: 075013efa01056743a59723296f6da67, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1248437088, guid: 075013efa01056743a59723296f6da67, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 5
+  - m_Name: Attacking
+    m_Hash: 24021925
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Neutrophil
+      m_Hash: 164789133
+      m_Sprite: {fileID: 959842642, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 959842642, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+    - m_Name: Killer T
+      m_Hash: 234903497
+      m_Sprite: {fileID: 21300000, guid: f4e1caa0b270dc348a27da4c0590cd85, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 21300000, guid: f4e1caa0b270dc348a27da4c0590cd85, type: 3}
+    - m_Name: Monocyte
+      m_Hash: 132159736
+      m_Sprite: {fileID: 21300000, guid: 07685c149ce3d9143a088d67d77dea24, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 21300000, guid: 07685c149ce3d9143a088d67d77dea24, type: 3}
+    - m_Name: Eosinophil
+      m_Hash: 275659917
+      m_Sprite: {fileID: 21300000, guid: 4dfa4f0df8a735348b05b3c208697bba, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 21300000, guid: 4dfa4f0df8a735348b05b3c208697bba, type: 3}
+    - m_Name: Natural Killer
+      m_Hash: 916048611
+      m_Sprite: {fileID: 89205621, guid: 075013efa01056743a59723296f6da67, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 89205621, guid: 075013efa01056743a59723296f6da67, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 5
+  - m_Name: Death
+    m_Hash: 646380074
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Neutrophil
+      m_Hash: 164789133
+      m_Sprite: {fileID: 459210183, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 459210183, guid: 59d93fb9f74ffb04aab4146d2dc38258, type: 3}
+    - m_Name: Killer T
+      m_Hash: 234903497
+      m_Sprite: {fileID: 609032108, guid: 3d1e82912076905448ddbf4bfbece365, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 609032108, guid: 3d1e82912076905448ddbf4bfbece365, type: 3}
+    - m_Name: Monocyte
+      m_Hash: 132159736
+      m_Sprite: {fileID: -1488087023, guid: b060ca9346c580245b242dd6ea7f8796, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1488087023, guid: b060ca9346c580245b242dd6ea7f8796, type: 3}
+    - m_Name: Natural Killer
+      m_Hash: 916048611
+      m_Sprite: {fileID: -1070282859, guid: 075013efa01056743a59723296f6da67, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1070282859, guid: 075013efa01056743a59723296f6da67, type: 3}
+    - m_Name: Eosinophil
+      m_Hash: 275659917
+      m_Sprite: {fileID: 349794600, guid: a4811106588c41b4a9d937def3c89bb5, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 349794600, guid: a4811106588c41b4a9d937def3c89bb5, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 5
+  m_PrimaryLibraryGUID: 
+  m_ModificationHash: 638693334964499368
+  m_Version: 1

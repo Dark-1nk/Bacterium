@@ -6,16 +6,17 @@ TagManager:
   tags:
   - EnemyTower
   - PlayerTower
-  - EnemyUnit
   - PlayerUnit
+  - Enemy
+  - Parasite
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Enemy
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 

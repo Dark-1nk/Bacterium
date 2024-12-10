@@ -1,54 +1,44 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
-public class CurrencySystem : MonoBehaviour
+public class CurrencyManager : MonoBehaviour
 {
-    public int startingCurrency = 0; // Initial currency amount
-    public float currencyRate = 1f; // Amount of currency generated per interval
-    public float productionInterval = 1f; // Time interval for currency production
-    public TMP_Text currencyText; // UI Text to display the currency amount
+    public int currency = 100;
+    public int passiveGain = 1;
+    public TMP_Text currencyText;
 
-    public int currentCurrency;
-    private float productionTimer;
-
-    void Start()
+    private void Start()
     {
-        currentCurrency = startingCurrency;
-        UpdateCurrencyText();
-        productionTimer = productionInterval; // Initialize the production timer
+        InvokeRepeating("AddPassiveCurrency", 1f, 1f);
+        UpdateCurrencyUI();
     }
 
-    void Update()
+    private void AddPassiveCurrency()
     {
-        // Generate currency over time
-        productionTimer -= Time.deltaTime;
-        if (productionTimer <= 0)
-        {
-            AddCurrency((int)currencyRate);
-            productionTimer = productionInterval; // Reset the timer
-        }
+        currency += passiveGain;
+        UpdateCurrencyUI();
     }
 
     public void AddCurrency(int amount)
     {
-        currentCurrency += amount;
-        UpdateCurrencyText();
+        currency += amount;
+        UpdateCurrencyUI();
     }
 
-    private void UpdateCurrencyText()
+    public void SpendCurrency(int amount)
     {
-        if (currencyText != null)
-        {
-            currencyText.text = $"Oxygen: {currentCurrency}";
-        }
-        else
-        {
-            Debug.LogWarning("Currency text UI element is not assigned.");
-        }
+        currency -= amount;
+        UpdateCurrencyUI();
     }
 
-    public void EnemyKilled(int reward)
+    public int GetCurrency()
     {
-        AddCurrency(reward);
+        return currency;
+    }
+
+    private void UpdateCurrencyUI()
+    {
+        currencyText.text = $"Oxygen: {currency}";
     }
 }

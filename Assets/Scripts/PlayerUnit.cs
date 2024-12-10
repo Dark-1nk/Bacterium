@@ -1,89 +1,97 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerUnit : MonoBehaviour
 {
-    public float speed = 2f;
-    public float attackRange = 1f;
-    public float attackCooldown = 1f;
-    private float attackTimer;
-    public GameObject bountyTargetPrefab;
-    private BountyDamage bountyDamage;
-    public LayerMask enemyLayer;
+    public float speed = 2.0f;
+    public int health = 100;
+    public int attackDamage = 10;
+    public float attackRange = 1.0f;
+    public float attackCooldown = 1.0f;
+    public Slider healthSlider;
     public Animator animator;
-    Rigidbody2D rb;
 
-    bool isAttacking;
+    private Transform target;
+    private float nextAttackTime = 0f;
 
-    void Start()
+    private void Start()
     {
-        bountyDamage = GetComponent<BountyDamage>();
-        rb = GetComponent<Rigidbody2D>();
+        healthSlider.maxValue = health;
+        healthSlider.value = health;
     }
 
-    void Update()
+    private void Update()
     {
-        animator.SetFloat("magnitude", rb.velocity.magnitude);
+        healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
 
-        attackTimer -= Time.deltaTime;
-
-        if (!isAttacking)
+        if (target == null)
         {
-            MoveForward(); // Continue moving if not attacking
+            transform.position += speed * Time.deltaTime * Vector3.right;
         }
-
-        CheckAndAttackEnemies();
-    }
-
-    void MoveForward()
-    {
-        // Move the unit forward
-        rb.velocity = new Vector2(speed, rb.velocity.y);
-    }
-
-    void StopMoving()
-    {
-        // Stop the unit's movement
-        rb.velocity = Vector2.zero;
-    }
-
-    void CheckAndAttackEnemies()
-    {
-        // Detect enemies within attack range
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayer);
-
-        if (enemies.Length > 0)
+        else if (Time.time >= nextAttackTime)
         {
-            StopMoving(); // Stop moving when an enemy is in range
-            isAttacking = true;
+            Attack();
+        }
+    }
 
-            if (attackTimer <= 0)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy") || other.CompareTag("Parasite"))
+        {
+            target = other.transform;
+        }
+        else if (other.CompareTag("EnemyTower"))
+        {
+            target = other.transform;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy") && target == other.transform)
+        {
+            target = null;
+        }
+    }
+
+    private void Attack()
+    {
+        if (target != null && target.CompareTag("Enemy") || target.CompareTag("Parasite"))
+        {
+            EnemyUnit enemy = target.GetComponent<EnemyUnit>();
+            if (enemy != null)
             {
-                // Trigger attack animation
-                if (animator != null)
-                {
-                    animator.SetTrigger("Attack");
-                }
-
-                // Apply damage
-                if (bountyDamage != null)
-                {
-                    bountyDamage.DealDamage(enemies[0].gameObject); // Attack the first enemy in range
-                }
-
-                // Reset the attack cooldown
-                attackTimer = attackCooldown;
+                animator.SetTrigger("Attack");
+                enemy.TakeDamage(attackDamage);
+                nextAttackTime = Time.time + attackCooldown;
             }
         }
-        else
+        else if (target != null && target.CompareTag("EnemyTower"))
         {
-            // No enemies in range, continue moving
-            isAttacking = false;
+            TowerHealth enemyTower = target.GetComponent<TowerHealth>();
+            if (enemyTower != null)
+            {
+                animator.SetTrigger("Attack");
+                enemyTower.TakeDamage(attackDamage);
+                nextAttackTime += Time.time + attackCooldown;
+            }
         }
     }
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-    }
 
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthSlider.value = health;
+
+        if (health <= 0)
+        {
+            if (healthSlider != null)
+            {
+                Destroy(healthSlider.gameObject);
+            }
+
+            animator.SetTrigger("Die");
+            Destroy(gameObject);
+        }
+    }
 }

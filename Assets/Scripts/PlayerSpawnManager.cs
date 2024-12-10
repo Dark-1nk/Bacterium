@@ -1,47 +1,33 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerSpawnManager : MonoBehaviour
 {
-    [System.Serializable]
-    public class Unit
+    public Transform spawnPoint; // Position to spawn units
+    public GameObject[] unitPrefabs; // Array of player unit prefabs
+    public int[] unitCosts; // Costs for each unit
+    private CurrencyManager currencyManager; // Reference to CurrencyManager
+
+    private void Start()
     {
-        public GameObject prefab; // Unit prefab
-        public int price; // Cost to spawn the unit
-    }
-
-    public Unit[] units; // Array of units available to spawn
-    public Transform spawnPoint; // Spawn location for player units
-    public CurrencySystem currencySystem; // Reference to the currency system
-
-    public Button[] unitButtons; // UI buttons for each unit type
-
-    void Start()
-    {
-        // Set up button listeners
-        for (int i = 0; i < unitButtons.Length; i++)
+        currencyManager = FindObjectOfType<CurrencyManager>();
+        if (currencyManager == null)
         {
-            int index = i; // Capture the index for the listener
-            unitButtons[i].onClick.AddListener(() => TrySpawnUnit(index));
+            Debug.LogError("CurrencyManager not found in the scene!");
         }
     }
 
-    public void TrySpawnUnit(int unitIndex)
+    public void SpawnUnit(int unitIndex)
     {
-        if (unitIndex < 0 || unitIndex >= units.Length)
+        if (unitIndex < 0 || unitIndex >= unitPrefabs.Length)
         {
-            Debug.LogWarning("Invalid unit index.");
+            Debug.LogError("Invalid unit index!");
             return;
         }
 
-        Unit unit = units[unitIndex];
-
-        // Check if the player has enough currency
-        if (currencySystem != null && currencySystem.currentCurrency >= unit.price)
+        if (currencyManager != null && currencyManager.GetCurrency() >= unitCosts[unitIndex])
         {
-            // Deduct the currency and spawn the unit
-            currencySystem.AddCurrency(-unit.price);
-            Instantiate(unit.prefab, spawnPoint.position, Quaternion.identity);
+            Instantiate(unitPrefabs[unitIndex], spawnPoint.position, Quaternion.identity);
+            currencyManager.SpendCurrency(unitCosts[unitIndex]);
         }
         else
         {

@@ -1,30 +1,12 @@
 using UnityEngine;
 
-public class BountyDamage : MonoBehaviour
+public class BountySystem : MonoBehaviour
 {
-    public GameObject bountyTargetPrefab; // The specific prefab to deal extra damage to
-    public int normalDamage = 10; // Default damage dealt to normal targets
-    public int bountyDamage = 20; // Extra damage dealt to the bounty target
+    public string targetTag = "SpecialEnemy";
+    public int bonusDamage = 20;
 
-    public void DealDamage(GameObject target)
+    public int GetDamage(string target)
     {
-        // Check if the target matches the bounty target prefab
-        if (target.CompareTag(bountyTargetPrefab.tag))
-        {
-            ApplyDamage(target, bountyDamage);
-        }
-        else
-        {
-            ApplyDamage(target, normalDamage);
-        }
-    }
-
-    private void ApplyDamage(GameObject target, int damage)
-    {
-        UnitHealth enemyUnit = target.GetComponent<UnitHealth>();
-        if (enemyUnit != null)
-        {
-            enemyUnit.TakeDamage(damage);
-        }
+        return target == targetTag ? bonusDamage : 0;
     }
 }

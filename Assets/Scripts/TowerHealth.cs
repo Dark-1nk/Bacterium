@@ -3,30 +3,24 @@ using UnityEngine.UI;
 
 public class TowerHealth : MonoBehaviour
 {
-    public int maxHealth = 100;
-    public int currentHealth;
-    public Slider healthBar;
+    public int health = 500;
+    public Slider healthSlider;
 
-    void Start()
+    private void Start()
     {
-        currentHealth = maxHealth;
-
-        if (healthBar != null)
-        {
-            healthBar.maxValue = maxHealth;
-            healthBar.value = currentHealth;
-        }
+        healthSlider.maxValue = health;
+        healthSlider.value = health;
     }
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        Debug.Log($"{gameObject.name} Health: {currentHealth}");
+        health -= damage;
+        healthSlider.value = health;
 
-        if (currentHealth <= 0)
+        if (health <= 0)
         {
-            Destroy(gameObject);
             Debug.Log($"{gameObject.name} has been destroyed!");
+            Destroy(gameObject);
         }
     }
 }
