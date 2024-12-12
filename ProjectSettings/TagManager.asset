@@ -7,8 +7,8 @@ TagManager:
   - EnemyTower
   - PlayerTower
   - PlayerUnit
-  - Enemy
   - Parasite
+  - EnemyUnit
   layers:
   - Default
   - TransparentFX

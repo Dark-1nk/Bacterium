@@ -11,6 +11,7 @@ public class EnemyUnit : MonoBehaviour
     public bool aoeAttack = false; // If true, attacks all units in range; otherwise, attacks the closest
     public Slider healthSlider;
     Animator animator;
+    private bool isAttacking = false;
 
     private Transform target; // Closest target if aoeAttack is false
     private float nextAttackTime = 0f;
@@ -27,28 +28,42 @@ public class EnemyUnit : MonoBehaviour
         // Update the health slider position above the unit
         healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
 
-        if (!aoeAttack)
+        if (isAttacking)
         {
-            // Find the closest player unit within range
-            FindClosestPlayerUnit();
+            return;
         }
 
-        // Move or attack based on the presence of a target
-        if (target == null && !aoeAttack)
+        transform.position += speed * Time.deltaTime * Vector3.right;
+
+
+        if (aoeAttack)
         {
-            // No target: move forward
-            transform.position += speed * Time.deltaTime * Vector3.left;
-        }
-        else if (Time.time >= nextAttackTime)
-        {
-            // Perform attack
-            if (aoeAttack)
+            if (AnyEnemyInRange())
             {
-                AttackAllInRange();
+                isAttacking = true;
+                if (Time.time >= nextAttackTime)
+                {
+                    AttackAllInRange();
+                }
             }
             else
             {
-                Attack();
+                isAttacking = false;
+            }
+        }
+        else if (!aoeAttack)
+        {
+            FindClosestPlayerUnit();
+            if (target != null)
+            {
+                if (Time.time >= nextAttackTime)
+                {
+                    Attack();
+                }
+            }
+            else
+            {
+                isAttacking = false;
             }
         }
     }
@@ -65,6 +80,7 @@ public class EnemyUnit : MonoBehaviour
             {
                 closestDistance = distance;
                 target = playerUnit.transform;
+                isAttacking = true;
             }
         }
     }
@@ -81,6 +97,18 @@ public class EnemyUnit : MonoBehaviour
                 nextAttackTime = Time.time + attackCooldown;
             }
         }
+    }
+
+    private bool AnyEnemyInRange()
+    {
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("PlayerUnit"))
+        {
+            if (Vector2.Distance(transform.position, player.transform.position) <= attackRange)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void AttackAllInRange()
