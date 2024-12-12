@@ -6,12 +6,13 @@ public class PlayerUnit : MonoBehaviour
     public float speed = 2.0f;
     public int health = 100;
     public int attackDamage = 10;
-    public float attackRange = 1.0f;
+    public float attackRange = 1.5f; // Range within which the unit can attack
     public float attackCooldown = 1.0f;
+    public bool aoeAttack = false; // If true, attacks all enemies in range; otherwise, attacks the closest
     public Slider healthSlider;
-    public Animator animator;
+    Animator animator;
 
-    private Transform target;
+    private Transform target; // Closest target if aoeAttack is false
     private float nextAttackTime = 0f;
 
     private void Start()
@@ -22,41 +23,54 @@ public class PlayerUnit : MonoBehaviour
 
     private void Update()
     {
+        // Update the health slider position above the unit
         healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
 
-        if (target == null)
+        if (!aoeAttack)
         {
-            transform.position += speed * Time.deltaTime * Vector3.right;
+            // Find the closest enemy within range
+            FindClosestEnemy();
+        }
+
+        // Move or attack based on the presence of a target
+        if (target == null && !aoeAttack)
+        {
+            // No target: move forward
+            transform.position += Vector3.right * speed * Time.deltaTime;
         }
         else if (Time.time >= nextAttackTime)
         {
-            Attack();
+            // Perform attack
+            if (aoeAttack)
+            {
+                AttackAllInRange();
+            }
+            else
+            {
+                Attack();
+            }
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void FindClosestEnemy()
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Parasite"))
-        {
-            target = other.transform;
-        }
-        else if (other.CompareTag("EnemyTower"))
-        {
-            target = other.transform;
-        }
-    }
+        float closestDistance = attackRange;
+        target = null; // Reset target
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy") && target == other.transform)
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            target = null;
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance <= closestDistance)
+            {
+                closestDistance = distance;
+                target = enemy.transform;
+            }
         }
     }
 
     private void Attack()
     {
-        if (target != null && target.CompareTag("Enemy") || target.CompareTag("Parasite"))
+        if (target != null)
         {
             EnemyUnit enemy = target.GetComponent<EnemyUnit>();
             if (enemy != null)
@@ -66,16 +80,25 @@ public class PlayerUnit : MonoBehaviour
                 nextAttackTime = Time.time + attackCooldown;
             }
         }
-        else if (target != null && target.CompareTag("EnemyTower"))
+    }
+
+    private void AttackAllInRange()
+    {
+        foreach (GameObject enemyUnit in GameObject.FindGameObjectsWithTag("EnemyUnit"))
         {
-            TowerHealth enemyTower = target.GetComponent<TowerHealth>();
-            if (enemyTower != null)
+            float distance = Vector2.Distance(transform.position, enemyUnit.transform.position);
+            if (distance <= attackRange)
             {
-                animator.SetTrigger("Attack");
-                enemyTower.TakeDamage(attackDamage);
-                nextAttackTime += Time.time + attackCooldown;
+                EnemyUnit enemy = enemyUnit.GetComponent<EnemyUnit>();
+                if (enemy != null)
+                {
+                    animator.SetTrigger("Attack");
+                    enemy.TakeDamage(attackDamage);
+                }
             }
         }
+
+        nextAttackTime = Time.time + attackCooldown; // Set cooldown
     }
 
     public void TakeDamage(int damage)
@@ -85,13 +108,18 @@ public class PlayerUnit : MonoBehaviour
 
         if (health <= 0)
         {
-            if (healthSlider != null)
-            {
-                Destroy(healthSlider.gameObject);
-            }
-
             animator.SetTrigger("Die");
             Destroy(gameObject);
         }
+        else
+        {
+            animator.SetTrigger("Hit");
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

@@ -6,12 +6,13 @@ public class EnemyUnit : MonoBehaviour
     public float speed = 2.0f;
     public int health = 100;
     public int attackDamage = 10;
-    public float attackRange = 1.0f;
+    public float attackRange = 1.5f; // Range within which the unit can attack
     public float attackCooldown = 1.0f;
+    public bool aoeAttack = false; // If true, attacks all units in range; otherwise, attacks the closest
     public Slider healthSlider;
-    public Animator animator;
+    Animator animator;
 
-    private Transform target;
+    private Transform target; // Closest target if aoeAttack is false
     private float nextAttackTime = 0f;
 
     private void Start()
@@ -22,35 +23,48 @@ public class EnemyUnit : MonoBehaviour
 
     private void Update()
     {
+        // Update the health slider position above the unit
         healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
 
-        if (target == null)
+        if (!aoeAttack)
         {
+            // Find the closest player unit within range
+            FindClosestPlayerUnit();
+        }
+
+        // Move or attack based on the presence of a target
+        if (target == null && !aoeAttack)
+        {
+            // No target: move forward
             transform.position += Vector3.left * speed * Time.deltaTime;
         }
         else if (Time.time >= nextAttackTime)
         {
-            Attack();
+            // Perform attack
+            if (aoeAttack)
+            {
+                AttackAllInRange();
+            }
+            else
+            {
+                Attack();
+            }
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void FindClosestPlayerUnit()
     {
-        if (other.CompareTag("PlayerUnit"))
-        {
-            target = other.transform;
-        }
-        else if (other.CompareTag("PlayerTower"))
-        {
-            target = other.transform;
-        }
-    }
+        float closestDistance = attackRange;
+        target = null; // Reset target
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("PlayerUnit") && target == other.transform)
+        foreach (GameObject playerUnit in GameObject.FindGameObjectsWithTag("PlayerUnit"))
         {
-            target = null;
+            float distance = Vector2.Distance(transform.position, playerUnit.transform.position);
+            if (distance <= closestDistance)
+            {
+                closestDistance = distance;
+                target = playerUnit.transform;
+            }
         }
     }
 
@@ -61,29 +75,51 @@ public class EnemyUnit : MonoBehaviour
             PlayerUnit player = target.GetComponent<PlayerUnit>();
             if (player != null)
             {
+                animator.SetTrigger("Attack");
                 player.TakeDamage(attackDamage);
                 nextAttackTime = Time.time + attackCooldown;
             }
         }
-        else
-        {
+    }
 
+    private void AttackAllInRange()
+    {
+        foreach (GameObject playerUnit in GameObject.FindGameObjectsWithTag("PlayerUnit"))
+        {
+            float distance = Vector2.Distance(transform.position, playerUnit.transform.position);
+            if (distance <= attackRange)
+            {
+                PlayerUnit player = playerUnit.GetComponent<PlayerUnit>();
+                if (player != null)
+                {
+                    animator.SetTrigger("Attack");
+                    player.TakeDamage(attackDamage);
+                }
+            }
         }
+
+        nextAttackTime = Time.time + attackCooldown; // Set cooldown
     }
 
     public void TakeDamage(int damage)
     {
+        
         health -= damage;
         healthSlider.value = health;
 
         if (health <= 0)
         {
-            if (healthSlider != null)
-            {
-                Destroy(healthSlider.gameObject);
-            }
-
+            animator.SetTrigger("Die");
             Destroy(gameObject);
         }
+        else
+        {
+            animator.SetTrigger("Hit");
+        }
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
