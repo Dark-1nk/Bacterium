@@ -11,11 +11,10 @@ GameObject:
   - component: {fileID: 5858047993597575373}
   - component: {fileID: 3742490326574515944}
   - component: {fileID: 5254571369300917096}
-  - component: {fileID: -7748751631614604339}
   m_Layer: 6
   m_Name: Monocyte
   m_TagString: PlayerUnit
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -53,7 +52,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 10
   attackCooldown: 7
-  aoeAttack: 0
+  aoeAttack: 1
   healthSlider: {fileID: 4820114092512893142}
 --- !u!95 &5254571369300917096
 Animator:
@@ -76,33 +75,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!50 &-7748751631614604339
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 465328928754443184}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!1 &4963011939417116998
 GameObject:
   m_ObjectHideFlags: 0

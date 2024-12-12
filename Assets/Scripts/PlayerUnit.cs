@@ -17,6 +17,7 @@ public class PlayerUnit : MonoBehaviour
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         healthSlider.maxValue = health;
         healthSlider.value = health;
     }
@@ -33,10 +34,10 @@ public class PlayerUnit : MonoBehaviour
         }
 
         // Move or attack based on the presence of a target
-        if (target == null && !aoeAttack)
+        if (target == null)
         {
             // No target: move forward
-            transform.position += Vector3.right * speed * Time.deltaTime;
+            this.transform.position += speed * Time.deltaTime * Vector3.right;
         }
         else if (Time.time >= nextAttackTime)
         {
@@ -72,11 +73,18 @@ public class PlayerUnit : MonoBehaviour
     {
         if (target != null)
         {
+            TowerHealth enemyTower = target.GetComponent<TowerHealth>();
             EnemyUnit enemy = target.GetComponent<EnemyUnit>();
             if (enemy != null)
             {
                 animator.SetTrigger("Attack");
                 enemy.TakeDamage(attackDamage);
+                nextAttackTime = Time.time + attackCooldown;
+            }
+            if (enemyTower != null)
+            {
+                animator.SetTrigger("Attack");
+                enemyTower.TakeDamage(attackDamage);
                 nextAttackTime = Time.time + attackCooldown;
             }
         }
@@ -89,11 +97,19 @@ public class PlayerUnit : MonoBehaviour
             float distance = Vector2.Distance(transform.position, enemyUnit.transform.position);
             if (distance <= attackRange)
             {
+                TowerHealth enemyTower = target.GetComponent<TowerHealth>();
                 EnemyUnit enemy = enemyUnit.GetComponent<EnemyUnit>();
                 if (enemy != null)
                 {
+
                     animator.SetTrigger("Attack");
                     enemy.TakeDamage(attackDamage);
+                }
+
+                if (enemyTower != null)
+                {
+                    animator.SetTrigger("Attack");
+                    enemyTower.TakeDamage(attackDamage);
                 }
             }
         }

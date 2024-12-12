@@ -17,6 +17,7 @@ public class EnemyUnit : MonoBehaviour
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         healthSlider.maxValue = health;
         healthSlider.value = health;
     }
@@ -36,7 +37,7 @@ public class EnemyUnit : MonoBehaviour
         if (target == null && !aoeAttack)
         {
             // No target: move forward
-            transform.position += Vector3.left * speed * Time.deltaTime;
+            transform.position += speed * Time.deltaTime * Vector3.left;
         }
         else if (Time.time >= nextAttackTime)
         {
