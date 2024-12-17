@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1465600569171737299}
   - component: {fileID: 6938599043432613018}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 5265869035725775292}
   - component: {fileID: -2382128908154036608}
   - component: {fileID: 1694772112637081115}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Eosinophil
   m_TagString: PlayerUnit
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -134,6 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   health: 20
+  maxHealth: 100
   attackDamage: 5
   attackRange: 1
   attackCooldown: 5
@@ -151,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a00f58f7380d77488368cfb0bd929fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetTag: Parasite
+  bountyTarget: {fileID: 0}
   bonusDamage: 500
 --- !u!95 &1694772112637081115
 Animator:
@@ -182,9 +183,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1773780344500935807}
     m_Modifications:
+    - target: {fileID: 744446367686164769, guid: 8573054eb0b6abe4e94f9bc4162034d8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2028758420572858202, guid: 8573054eb0b6abe4e94f9bc4162034d8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2419389329863723574, guid: 8573054eb0b6abe4e94f9bc4162034d8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2838084220067030396, guid: 8573054eb0b6abe4e94f9bc4162034d8, type: 3}
       propertyPath: m_Name
       value: Health Bar
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838084220067030396, guid: 8573054eb0b6abe4e94f9bc4162034d8, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3289181971503324826, guid: 8573054eb0b6abe4e94f9bc4162034d8, type: 3}
       propertyPath: m_Pivot.x
