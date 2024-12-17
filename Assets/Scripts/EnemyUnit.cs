@@ -6,100 +6,64 @@ public class EnemyUnit : MonoBehaviour
     public float speed = 2.0f;
     public int health = 100;
     public int attackDamage = 10;
-    public float attackRange = 1.5f; // Range within which the unit can attack
+    public int towerDamage = 10;
+    public float attackRange = 1.5f;
     public float attackCooldown = 1.0f;
-    public bool aoeAttack = false; // If true, attacks all units in range; otherwise, attacks the closest
+    public bool aoeAttack = false; // If true, attacks all player units in range
     public Slider healthSlider;
     Animator animator;
-    private bool isAttacking = false;
+    private Rigidbody2D rb;
 
-    private Transform target; // Closest target if aoeAttack is false
     private float nextAttackTime = 0f;
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
         healthSlider.maxValue = health;
         healthSlider.value = health;
+
+        animator.SetBool("isWalking", true); // Walking is the default animation
     }
 
     private void Update()
     {
-        // Update the health slider position above the unit
-        healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
-
-        if (isAttacking)
+        // Update health slider position
+        if (healthSlider != null)
         {
-            return;
+            healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
         }
 
-        transform.position += speed * Time.deltaTime * Vector3.right;
+        // Check for player units in range
+        bool playersInRange = AnyPlayerInRange();
 
-
-        if (aoeAttack)
+        if (!playersInRange)
         {
-            if (AnyEnemyInRange())
+            // Move forward if no players are in range
+            rb.velocity = new Vector2(-speed, rb.velocity.y);
+            animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            // Stop moving and attack if players are in range
+            rb.velocity = Vector2.zero;
+
+            if (Time.time >= nextAttackTime)
             {
-                isAttacking = true;
-                if (Time.time >= nextAttackTime)
+                animator.SetBool("isWalking", false);
+                if (aoeAttack)
                 {
                     AttackAllInRange();
                 }
-            }
-            else
-            {
-                isAttacking = false;
-            }
-        }
-        else if (!aoeAttack)
-        {
-            FindClosestPlayerUnit();
-            if (target != null)
-            {
-                if (Time.time >= nextAttackTime)
+                else
                 {
-                    Attack();
+                    AttackClosestPlayer();
                 }
             }
-            else
-            {
-                isAttacking = false;
-            }
         }
     }
 
-    private void FindClosestPlayerUnit()
-    {
-        float closestDistance = attackRange;
-        target = null; // Reset target
-
-        foreach (GameObject playerUnit in GameObject.FindGameObjectsWithTag("PlayerUnit"))
-        {
-            float distance = Vector2.Distance(transform.position, playerUnit.transform.position);
-            if (distance <= closestDistance)
-            {
-                closestDistance = distance;
-                target = playerUnit.transform;
-                isAttacking = true;
-            }
-        }
-    }
-
-    private void Attack()
-    {
-        if (target != null)
-        {
-            PlayerUnit player = target.GetComponent<PlayerUnit>();
-            if (player != null)
-            {
-                animator.SetTrigger("Attack");
-                player.TakeDamage(attackDamage);
-                nextAttackTime = Time.time + attackCooldown;
-            }
-        }
-    }
-
-    private bool AnyEnemyInRange()
+    private bool AnyPlayerInRange()
     {
         foreach (GameObject player in GameObject.FindGameObjectsWithTag("PlayerUnit"))
         {
@@ -111,6 +75,36 @@ public class EnemyUnit : MonoBehaviour
         return false;
     }
 
+    private void AttackClosestPlayer()
+    {
+        GameObject closestPlayer = null;
+        float closestDistance = attackRange;
+
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("PlayerUnit"))
+        {
+            float distance = Vector2.Distance(transform.position, player.transform.position);
+            if (distance <= closestDistance)
+            {
+                closestDistance = distance;
+                closestPlayer = player;
+            }
+        }
+
+        if (closestPlayer != null)
+        {
+            PlayerUnit player = closestPlayer.GetComponent<PlayerUnit>();
+            TowerHealth playerTower = closestPlayer.GetComponent<TowerHealth>();
+
+            if (player != null || playerTower != null)
+            {
+                animator.SetTrigger("Attack");
+                player.TakeDamage(attackDamage);
+                playerTower.TakeDamage(towerDamage);
+                nextAttackTime = Time.time + attackCooldown;
+            }
+        }
+    }
+
     private void AttackAllInRange()
     {
         foreach (GameObject playerUnit in GameObject.FindGameObjectsWithTag("PlayerUnit"))
@@ -119,20 +113,21 @@ public class EnemyUnit : MonoBehaviour
             if (distance <= attackRange)
             {
                 PlayerUnit player = playerUnit.GetComponent<PlayerUnit>();
-                if (player != null)
+                TowerHealth playerTower = playerUnit.GetComponent<TowerHealth>();
+                if (player != null || playerTower != null)
                 {
                     animator.SetTrigger("Attack");
                     player.TakeDamage(attackDamage);
+                    playerTower.TakeDamage(towerDamage);
                 }
             }
         }
 
-        nextAttackTime = Time.time + attackCooldown; // Set cooldown
+        nextAttackTime = Time.time + attackCooldown;
     }
 
     public void TakeDamage(int damage)
     {
-        
         health -= damage;
         healthSlider.value = health;
 
@@ -146,9 +141,10 @@ public class EnemyUnit : MonoBehaviour
             animator.SetTrigger("Hit");
         }
     }
+
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

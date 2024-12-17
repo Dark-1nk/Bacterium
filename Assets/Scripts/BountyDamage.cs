@@ -2,11 +2,20 @@ using UnityEngine;
 
 public class BountySystem : MonoBehaviour
 {
-    public string targetTag = "SpecialEnemy";
+    public GameObject bountyTarget;
     public int bonusDamage = 20;
 
-    public int GetDamage(string target)
+    public void ApplyBonusDamage()
     {
-        return target == targetTag ? bonusDamage : 0;
+        if (bountyTarget != null)
+        {
+            PlayerUnit player = GetComponent<PlayerUnit>();
+            EnemyUnit bounty = gameObject.GetComponent<EnemyUnit>();
+
+            if (bounty != null)
+            {
+                bounty.TakeDamage(bonusDamage);
+            }
+        }
     }
 }
