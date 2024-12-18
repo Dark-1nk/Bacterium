@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections;
 public class PlayerUnit : MonoBehaviour
 {
     public float speed = 2.0f;
@@ -17,7 +17,8 @@ public class PlayerUnit : MonoBehaviour
 
     private Transform targetUnit;
     private Transform targetTower;
-    private float nextAttackTime = 0f;
+    private float nextAttackTime = 0f;  // Cooldown timer
+    private bool isAttacking = false;  // Attack flag
 
     private void Start()
     {
@@ -35,7 +36,7 @@ public class PlayerUnit : MonoBehaviour
         // Update health slider position
         if (healthSlider != null)
         {
-            healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
+            healthSlider.transform.position = transform.position + new Vector3(0, 1.5f, 0);
         }
 
         bool unitsInRange = AnyEnemyInRange();
@@ -53,6 +54,7 @@ public class PlayerUnit : MonoBehaviour
             rb.velocity = Vector2.zero;
             animator.SetBool("isWalking", false);
 
+            // Attack if targets are in range and cooldown has passed
             if (Time.time >= nextAttackTime)
             {
                 if (unitsInRange)
@@ -104,15 +106,17 @@ public class PlayerUnit : MonoBehaviour
 
     private void AttackClosestEnemy()
     {
-        if (targetUnit != null)
+        if (targetUnit != null && !isAttacking)
         {
+            isAttacking = true;
+            animator.SetTrigger("Attack");
             EnemyUnit enemy = targetUnit.GetComponent<EnemyUnit>();
             if (enemy != null)
             {
-                animator.SetTrigger("Attack");
                 enemy.TakeDamage(attackDamage);
-                nextAttackTime = Time.time + attackCooldown;
             }
+            nextAttackTime = Time.time + attackCooldown;  // Set cooldown
+            StartCoroutine(ResetAttackFlag()); // Reset the flag after the attack
         }
     }
 
@@ -125,32 +129,36 @@ public class PlayerUnit : MonoBehaviour
         {
             // Check if enemy is within attack range
             float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance <= attackRange)
+            if (distance <= attackRange && !isAttacking)
             {
+                isAttacking = true;
+                animator.SetTrigger("Attack");
                 EnemyUnit enemyUnit = enemy.GetComponent<EnemyUnit>();
                 if (enemyUnit != null)
                 {
-                    animator.SetTrigger("Attack");
                     enemyUnit.TakeDamage(attackDamage);
                 }
             }
         }
 
         // Set cooldown
-        nextAttackTime = Time.time + attackCooldown;
+        nextAttackTime = Time.time + attackCooldown;  // Set cooldown
+        StartCoroutine(ResetAttackFlag()); // Reset the flag after the attack
     }
 
     private void AttackTower()
     {
-        if (targetTower != null)
+        if (targetTower != null && !isAttacking)
         {
+            isAttacking = true;
+            animator.SetTrigger("Attack");
             TowerHealth towerHealth = targetTower.GetComponent<TowerHealth>();
             if (towerHealth != null)
             {
-                animator.SetTrigger("Attack");
                 towerHealth.TakeDamage(attackDamage);
-                nextAttackTime = Time.time + attackCooldown;
             }
+            nextAttackTime = Time.time + attackCooldown;  // Set cooldown
+            StartCoroutine(ResetAttackFlag()); // Reset the flag after the attack
         }
     }
 
@@ -164,10 +172,17 @@ public class PlayerUnit : MonoBehaviour
             animator.SetTrigger("Die");
             Destroy(gameObject);
         }
-        else if (health <= maxHealth * 0.5) 
+        else
         {
             animator.SetTrigger("Hit");
         }
+    }
+
+    private IEnumerator ResetAttackFlag()
+    {
+        // Wait for the attack cooldown to finish
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
     }
 
     private void OnDrawGizmosSelected()

@@ -35,7 +35,7 @@ public class EnemyUnit : MonoBehaviour
         // Update health slider position
         if (healthSlider != null)
         {
-            healthSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 1, 0));
+            healthSlider.transform.position = transform.position + new Vector3(0, 1.5f, 0);
         }
 
         bool unitsInRange = AnyPlayerUnitInRange();
@@ -153,19 +153,27 @@ public class EnemyUnit : MonoBehaviour
         }
     }
 
+    public void ResetAttackTrigger()
+    {
+        animator.ResetTrigger("Attack");
+    }
+
     public void TakeDamage(int damage)
     {
         health -= damage;
         healthSlider.value = health;
+
+        bool reachedHalfHealth = false;
 
         if (health <= 0)
         {
             animator.SetTrigger("Die");
             Destroy(gameObject);
         }
-        else if (health <= maxHealth * 0.5)
+        else if (health <= maxHealth * 0.5 && !reachedHalfHealth)
         {
             animator.SetTrigger("Hit");
+            reachedHalfHealth = true;
         }
     }
 

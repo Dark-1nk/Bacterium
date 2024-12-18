@@ -5,9 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerUnit
-  - Parasite
   - EnemyUnit
-  - Enemy
+  - PlayerTower
+  - EnemyTower
   layers:
   - Default
   - TransparentFX
@@ -44,4 +44,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 1998149437
     locked: 0
